@@ -21,7 +21,7 @@ from django.utils.translation import ugettext_lazy as _
 from emailauth.forms import (LoginForm, RegistrationForm,
     PasswordResetRequestForm, PasswordResetForm, AddEmailForm, DeleteEmailForm,
     ConfirmationForm)
-from emailauth.models import UserEmail
+from emailauth.models import UserEmail, get_current_site
 
 from emailauth.utils import (use_single_email, requires_single_email_mode,
     requires_multi_emails_mode, email_verification_days)
@@ -37,7 +37,6 @@ def login(request, template_name='emailauth/login.html',
         if form.is_valid():
             from django.contrib.auth import login
             login(request, form.get_user())
-
             if request.get_host() == 'testserver':
                 if not redirect_to or '//' in redirect_to or ' ' in redirect_to:
                     redirect_to = settings.LOGIN_REDIRECT_URL
@@ -65,10 +64,7 @@ def login(request, template_name='emailauth/login.html',
     else:
         form = LoginForm()
 
-    if Site._meta.installed:
-        current_site = Site.objects.get_current()
-    else:
-        current_site = RequestSite(request)
+    current_site = get_current_site(request)
 
     return render_to_response(template_name, {
             'form': form,
@@ -127,13 +123,14 @@ def register(request, callback=default_register_callback):
         if form.is_valid():
             email_obj = UserEmail.objects.create_unverified_email(
                 form.cleaned_data['email'])
-            email_obj.send_verification_email(form.cleaned_data['first_name'])
+            current_site = get_current_site(request)
+            first_name = form.cleaned_data['first_name']
+            email_obj.send_verification_email(current_site, first_name)
 
             if callback is not None:
                 callback(form, email_obj)
 
-            site = Site.objects.get_current()
-            email_obj.user.message_set.create(message='Welcome to %s.' % site.name)
+            email_obj.user.message_set.create(message='Welcome to %s.' % current_site.name)
 
             email_obj.save()
             return HttpResponseRedirect(reverse('emailauth_register_continue',
@@ -212,7 +209,7 @@ def request_password_reset(request,
             user_email.make_new_key()
             user_email.save()
 
-            current_site = Site.objects.get_current()
+            current_site = get_current_site(request)
 
             subject = render_to_string(
                 'emailauth/request_password_email_subject.txt',

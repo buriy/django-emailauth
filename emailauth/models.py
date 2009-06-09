@@ -5,7 +5,7 @@ import django.core.mail
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import Site, RequestSite
 
 from django.template.loader import render_to_string
 
@@ -16,6 +16,12 @@ import django.core.mail
 from django.conf import settings
 
 from emailauth.utils import email_verification_days
+
+def get_current_site(request):
+    if Site._meta.installed:
+        return Site.objects.get_current()
+    else:
+        return RequestSite(request)
 
 class UserEmailManager(models.Manager):
     def make_random_key(self, email):
@@ -92,9 +98,7 @@ class UserEmail(models.Model):
             self.email)
         self.code_creation_date = datetime.datetime.now()
 
-    def send_verification_email(self, first_name=None):
-        current_site = Site.objects.get_current()
-        
+    def send_verification_email(self, current_site, first_name=None):
         subject = render_to_string('emailauth/verification_email_subject.txt',
             {'site': current_site})
         # Email subject *must not* contain newlines
