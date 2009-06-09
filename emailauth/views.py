@@ -189,7 +189,9 @@ def verify(request, verification_key, template_name='emailauth/verify.html',
     context = RequestContext(request)
     if extra_context is not None:
         for key, value in extra_context.items():
-            context[key] = value() if callable(value) else value
+            if callable(value):
+                value = value()
+            context[key] = value
 
     return render_to_response(template_name,
         {
