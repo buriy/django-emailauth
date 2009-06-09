@@ -298,7 +298,7 @@ class TestSetDefaultEmail(BaseTestCase):
         })
         self.assertStatusCode(response, Status.NOT_FOUND)
 
-class TestDeleteEmail(BaseTestCase):
+class TestDeleteEmail2(BaseTestCase):
     def setUp(self):
         self.user, self.user_email = self.createActiveUser()
         self.client = self.getLoggedInClient()
