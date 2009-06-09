@@ -105,14 +105,19 @@ def get_max_length(model, field_name):
 
 def default_register_callback(form, email):
     data = form.cleaned_data
-    user = User()
+    try:
+        user = User.objects.get(email=email.email)
+    except (User.DoesNotExist, User.MultipleObjectsReturned):
+        user = User()
+    
     user.first_name = data['first_name']
     user.is_active = False
     user.email = email.email
     user.set_password(data['password1'])
     user.save()
-    user.username = ('id_%d_%s' % (user.id, user.email))[
-        :get_max_length(User, 'username')]
+    if not user.username:
+        user.username = ('id_%d_%s' % (user.id, user.email))[
+            :get_max_length(User, 'username')]
     user.save()
     email.user = user
 
