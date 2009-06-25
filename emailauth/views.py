@@ -138,7 +138,7 @@ def register(request, callback=default_register_callback):
             email_obj.user.message_set.create(message='Welcome to %s.' % current_site.name)
 
             email_obj.save()
-            return HttpResponseRedirect(reverse('emailauth_register_continue',
+            return HttpResponseRedirect(reverse('ea_register_continue',
                 args=[email_obj.email]))
     else:
         form = RegistrationForm()
@@ -165,7 +165,7 @@ def default_verify_callback(request, email):
         login(request, user)
         return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
     else:
-        return HttpResponseRedirect(reverse('emailauth_account'))
+        return HttpResponseRedirect(reverse('ea_account'))
 
 
 def verify(request, verification_key, template_name='emailauth/verify.html',
@@ -233,7 +233,7 @@ def request_password_reset(request,
                 settings.DEFAULT_FROM_EMAIL, [email])
 
             return HttpResponseRedirect(
-                reverse('emailauth_request_password_reset_continue',
+                reverse('ea_request_password_reset_continue',
                 args=[email]))
     else:
         form = PasswordResetRequestForm()
@@ -278,7 +278,7 @@ def reset_password(request, reset_code,
             from django.contrib.auth import login
             user.backend = 'emailauth.backends.EmailBackend'
             login(request, user)
-            return HttpResponseRedirect(reverse('emailauth_account'))
+            return HttpResponseRedirect(reverse('ea_account'))
     else:
         form = PasswordResetForm()
 
@@ -298,7 +298,7 @@ def add_email(request, template_name='emailauth/add_email.html'):
                 form.cleaned_data['email'], user=request.user)
             email_obj.send_verification_email()
             email_obj.save()
-            return HttpResponseRedirect(reverse('emailauth_add_email_continue',
+            return HttpResponseRedirect(reverse('ea_add_email_continue',
                 args=[email_obj.email]))
     else:
         form = AddEmailForm()
@@ -332,7 +332,7 @@ def change_email(request, template_name='emailauth/change_email.html'):
             email_obj.send_verification_email()
             email_obj.save()
 
-            return HttpResponseRedirect(reverse('emailauth_change_email_continue',
+            return HttpResponseRedirect(reverse('ea_change_email_continue',
                 args=[email_obj.email]))
     else:
         form = AddEmailForm()
@@ -367,7 +367,7 @@ def delete_email(request, email_id,
             user_email.delete()
 
             # Not really sure, where I should redirect from here...
-            return HttpResponseRedirect(reverse('emailauth_account'))
+            return HttpResponseRedirect(reverse('ea_account'))
     else:
         form = DeleteEmailForm(request.user)
 
@@ -390,7 +390,7 @@ def set_default_email(request, email_id,
         if form.is_valid():
             user_email.default = True
             user_email.save()
-            return HttpResponseRedirect(reverse('emailauth_account'))
+            return HttpResponseRedirect(reverse('ea_account'))
     else:
         form = ConfirmationForm()
 
@@ -406,6 +406,6 @@ def resend_verification_email(request, email_id):
         verified=False)
     user_email.send_verification_email()
 
-    return HttpResponseRedirect(reverse('emailauth_add_email_continue',
+    return HttpResponseRedirect(reverse('ea_add_email_continue',
         args=[user_email.email]))
 

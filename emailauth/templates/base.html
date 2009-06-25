@@ -25,7 +25,7 @@
                             <div class="logarea">
                             {% if user.is_authenticated %}
                                 <span>Welcome, {{ user.first_name }}.</span>
-                                <a href="{% url emailauth_account %}">Account</a>
+                                <a href="{% url ea_account %}">Account</a>
                                 <a href="{% url logout %}">Logout</a>
                             {% else %}
                                 <a href="{% url register %}">Register</a> <span>|</span> <a href="{% url login %}">Login</a>

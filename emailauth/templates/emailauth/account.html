@@ -22,8 +22,8 @@
             {% for email in extra_emails %}
                 <li>
                     {{ email }}
-                    <a class="toollink" href="{% url emailauth_set_default_email email.id %}">Set as default</a>
-                    <a class="toollink" href="{% url emailauth_delete_email email.id %}">Delete</a>
+                    <a class="toollink" href="{% url ea_set_default_email email.id %}">Set as default</a>
+                    <a class="toollink" href="{% url ea_delete_email email.id %}">Delete</a>
                 </li>
             {% endfor %}
         </ul>
@@ -33,11 +33,11 @@
         <ul>
             {% for email in unverified_emails %}
                 <li>
-                    {{ email }} &ndash; <a href="{% url emailauth_resend_verification_email email.id %}">resend verification email</a>
+                    {{ email }} &ndash; <a href="{% url ea_resend_verification_email email.id %}">resend verification email</a>
                 </li>
             {% endfor %}
         </ul>
     {% endif %}
-    <a href="{% url emailauth_add_email %}">Add email</a>
+    <a href="{% url ea_add_email %}">Add email</a>
 
 {% endblock %}
