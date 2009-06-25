@@ -5,9 +5,10 @@ from emailauth.models import UserEmail
 
 
 class EmailBackend(ModelBackend):
-    def authenticate(self, username=None, password=None):
+    def authenticate(self, email=None, password=None):
         try:
-            email = UserEmail.objects.get(email=username, verified=True)
+            email = UserEmail.objects.get(email=email, verified=True)
+            print email, email.user,
             if email.user.check_password(password):
                 return email.user
         except UserEmail.DoesNotExist:
