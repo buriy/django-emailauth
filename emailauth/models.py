@@ -1,7 +1,6 @@
+import django.core.mail
 import datetime
 import random
-
-import django.core.mail
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -11,7 +10,6 @@ from django.template.loader import render_to_string
 
 from django.utils.hashcompat import sha_constructor
 from django.utils.translation import ugettext_lazy as _
-import django.core.mail
 
 from django.conf import settings
 
